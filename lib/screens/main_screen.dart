@@ -1,7 +1,6 @@
 import 'package:admin_pegawai/screens/dashboard_screen.dart';
 import 'package:admin_pegawai/screens/account_screen.dart';
-import 'package:admin_pegawai/screens/profile_screen.dart';
-import 'package:admin_pegawai/screens/reset_screen.dart';
+import 'package:admin_pegawai/screens/role_screen.dart';
 import 'package:admin_pegawai/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     Dashboard(),
     AccountScreen(),
-    ResetScreen(),
-    ProfileScreen(),
+    RoleScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -39,13 +37,9 @@ class _MainScreenState extends State<MainScreen> {
         selectedItemColor: AppColors.primaryColor,
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_add_alt_1),
-            label: 'Akun',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.vpn_key), label: 'Reset'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Akun'),
+          BottomNavigationBarItem(icon: Icon(Icons.key), label: 'Role'),
         ],
       ),
     );

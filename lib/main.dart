@@ -1,6 +1,8 @@
 import 'package:admin_pegawai/providers/user_provider.dart';
 import 'package:admin_pegawai/screens/auth_screen.dart';
+import 'package:admin_pegawai/screens/detail_screen.dart';
 import 'package:admin_pegawai/screens/main_screen.dart';
+import 'package:admin_pegawai/screens/reset_screen.dart';
 import 'package:admin_pegawai/utils/token_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -39,6 +41,8 @@ class MainApp extends StatelessWidget {
       routes: {
         "/login": (context) => const AuthScreen(),
         "/dashboard": (context) => const MainScreen(),
+        "/detail-akun": (context) => const DetailAkunScreen(),
+        "/reset-screen": (context) => ResetScreen(),
       },
     );
   }

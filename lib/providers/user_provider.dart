@@ -7,11 +7,16 @@ class UserProvider with ChangeNotifier {
   final AuthService authService = AuthService();
 
   int _totalUser = 0;
+  int _totalRole = 0;
   int get totalUser => _totalUser;
+  int get totalRole => _totalRole;
 
   bool isLoading = false;
   UserResponse? _data;
   UserResponse? get data => _data;
+
+  List<UserResponse> _listUser = [];
+  List<UserResponse> get listUser => _listUser;
 
   File? _profileImage;
   File? get profileImage => _profileImage;
@@ -66,12 +71,46 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchUserCount() async {
-    final count = await authService.countUser();
-    if (count != null) {
-      _totalUser = count;
-      notifyListeners(); // Memberitahu UI untuk update angka
+  Future<void> fetchDashboardData() async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final initialResponse = await Future.wait([
+        authService.fetchPaginatedUsers(1, 10),
+        authService.fetchTotalRoles(),
+      ]);
+
+      final firstPageResult = initialResponse[0] as UserPaginationResponse?;
+      final totalRoleResult = initialResponse[1] as int;
+
+      _totalRole = totalRoleResult;
+
+      if (firstPageResult != null) {
+        _totalUser = firstPageResult.totalItems;
+        List<UserResponse> temporaryList = List.from(firstPageResult.users);
+
+        // Mengambil langsung jumlah total halaman dari keytotalPages milik api
+        int totalPages = firstPageResult.totalPages;
+
+        for (int nextPage = 2; nextPage <= totalPages; nextPage++) {
+          final subsequentResult = await authService.fetchPaginatedUsers(
+            nextPage,
+            10,
+          );
+          if (subsequentResult != null) {
+            temporaryList.addAll(subsequentResult.users);
+          }
+        }
+
+        _listUser = temporaryList;
+      }
+    } catch (e) {
+      debugPrint("Error fetching dashboard data: $e");
     }
+
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> profile() async {
@@ -106,16 +145,6 @@ class UserProvider with ChangeNotifier {
 
   Future<void> setProfile(File image) async {
     _profileImage = image;
-    notifyListeners(); // UI akan otomatis update foto setelah dipilih
-
-    // Opsional: Jika ingin langsung upload ke server
-    /*
-    try {
-      await authService.uploadProfileImage(image);
-      debugPrint("Upload berhasil");
-    } catch (e) {
-      debugPrint("Gagal upload: $e");
-    }
-    */
+    notifyListeners();
   }
 }

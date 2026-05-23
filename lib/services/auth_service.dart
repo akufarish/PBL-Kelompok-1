@@ -125,6 +125,29 @@ class AuthService {
     }
   }
 
+  Future<int> fetchTotalRoles() async {
+    try {
+      String? token = await TokenManager.getAccessToken();
+      final response = await http.get(
+        Uri.parse("$kelompok1Url/api/roles"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final data = RolePaginationResponse.fromJson(jsonResponse);
+        return data.totalRoles;
+      }
+      return 0;
+    } catch (e) {
+      debugPrint(e.toString());
+      return 0;
+    }
+  }
+
   Future<bool> resetPassword(ResetPassword payload) async {
     try {
       String? token = await TokenManager.getAccessToken();
@@ -148,26 +171,27 @@ class AuthService {
     }
   }
 
-  Future<int?> countUser() async {
+  Future<UserPaginationResponse?> fetchPaginatedUsers(
+    int page,
+    int perPage,
+  ) async {
     try {
       String? token = await TokenManager.getAccessToken();
       final response = await http.get(
-        Uri.parse("$kelompok1Url/api/user/count"),
+        Uri.parse("$kelompok1Url/api/users?page=$page&perPage=$perPage"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token",
         },
       );
 
-      final jsonResponse = jsonDecode(response.body);
-
       if (response.statusCode == 200) {
-        // Ambil nilai integer dari field 'data'
-        return jsonResponse['data'] as int;
+        final jsonResponse = jsonDecode(response.body);
+        return UserPaginationResponse.fromJson(jsonResponse);
       }
       return null;
     } catch (e) {
-      debugPrint("Error countUser: $e");
+      debugPrint("Error pagination: $e");
       return null;
     }
   }
