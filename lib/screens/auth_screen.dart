@@ -10,7 +10,7 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: LoginPage());
+    return const Scaffold(body: LoginPage());
   }
 }
 
@@ -28,16 +28,17 @@ class _LoginPageState extends State<LoginPage> {
       enableDrag: false,
       isScrollControlled: true,
       context: context,
+      barrierColor: Colors.transparent,
       backgroundColor: AppColors.backgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (BuildContext context) {
         return Padding(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: const SizedBox(height: 300, child: LoginForm()),
+          child: const LoginForm(),
         );
       },
     );
@@ -45,9 +46,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
       _showModal();
     });
   }
@@ -56,29 +57,27 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
-      body: Container(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image(
-                image: AssetImage("assets/logo/logo.png"),
-                width: 285,
-                height: 285,
-              ),
-              Text(
-                'SABAR',
-                style: GoogleFonts.poppins(
-                  textStyle: const TextStyle(
-                    color: AppColors.backgroundColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 28
-                  ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 100),
+            Image.asset("assets/logo/logo.png", width: 160, height: 160),
+            const SizedBox(height: 1),
+            Text(
+              'SABAR',
+              style: GoogleFonts.poppins(
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 32,
+                  letterSpacing: 1.5,
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 150),
+          ],
         ),
       ),
     );
@@ -95,12 +94,20 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void doLogin() async {
     final provider = context.read<UserProvider>();
 
     LoginRequest loginRequest = LoginRequest(
-      email: _emailController.text,
+      email: _emailController.text.trim(),
       password: _passwordController.text,
     );
 
@@ -115,9 +122,12 @@ class _LoginFormState extends State<LoginForm> {
         (route) => false,
       );
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Email atau password salah")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email atau password salah"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 
@@ -125,66 +135,151 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     final provider = context.watch<UserProvider>();
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(23.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Login", style: TextStyle(fontSize: 20)),
-            SizedBox(height: 19),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                labelStyle: TextStyle(color: Colors.black),
-                prefixIcon: Icon(Icons.mail, color: Colors.black),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                filled: true,
-                fillColor: Colors.white,
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.backgroundColor,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: const EdgeInsets.only(top: 32, left: 24, right: 24, bottom: 40),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Text(
+              "Selamat Datang",
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF333333),
               ),
             ),
-            SizedBox(height: 19),
-            TextField(
-              obscureText: true,
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                labelStyle: TextStyle(color: Colors.black),
-                prefixIcon: Icon(Icons.lock, color: Colors.black),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: const Color(0xFF666666),
                 ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-            SizedBox(height: 19),
-
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: provider.isLoading ? null : doLogin,
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                children: const [
+                  TextSpan(
+                    text: "SILAHKAN LOGIN",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  backgroundColor: AppColors.primaryColor,
-                ),
-                child: provider.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Login",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  TextSpan(text: " MENGGUNAKAN\nAKUN YANG TELAH TERDAFTAR"),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "Gmail",
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF333333),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              hintText: 'Gmail',
+              hintStyle: const TextStyle(color: Colors.grey),
+              prefixIcon: const Icon(Icons.mail_outline, color: Colors.grey),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            "Password",
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF333333),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            obscureText: _obscurePassword,
+            controller: _passwordController,
+            decoration: InputDecoration(
+              hintText: 'Password',
+              hintStyle: const TextStyle(color: Colors.grey),
+              prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: provider.isLoading ? null : doLogin,
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                backgroundColor: AppColors.primaryColor,
+                elevation: 0,
+              ),
+              child: provider.isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : Text(
+                      "Masuk",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+            ),
+          ),
+        ],
       ),
     );
   }
