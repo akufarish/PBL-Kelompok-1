@@ -174,23 +174,30 @@ class _ResetScreenState extends State<ResetScreen> {
                                 : null,
                           ),
                           const SizedBox(height: 24),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _showConfirmationDialog();
-                              }
-                            },
-                            icon: const Icon(
-                              Icons.save,
-                              size: 18,
-                              color: Colors.white,
-                            ),
-                            label: const Text(
-                              "Simpan",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF27AE60),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _showConfirmationDialog();
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.save,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                              label: const Text(
+                                "Simpan",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF27AE60),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
                             ),
                           ),
                         ],
