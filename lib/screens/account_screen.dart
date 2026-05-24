@@ -89,7 +89,7 @@ class _AccountScreenState extends State<AccountScreen> {
               style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
                   color: AppColors.primaryColor,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

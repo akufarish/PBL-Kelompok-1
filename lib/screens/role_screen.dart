@@ -21,6 +21,17 @@ class _RoleScreenState extends State<RoleScreen> {
     super.dispose();
   }
 
+  void doLogout(BuildContext context) async {
+    final provider = context.read<UserProvider>();
+    bool isSuccess = await provider.logout();
+
+    if (!mounted) return;
+
+    if (isSuccess) {
+      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
@@ -68,6 +79,12 @@ class _RoleScreenState extends State<RoleScreen> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: () => doLogout(context),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
