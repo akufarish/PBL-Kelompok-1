@@ -12,6 +12,7 @@ import 'package:admin_pegawai/screens/detail_screen.dart';
 import 'package:admin_pegawai/screens/detail_tahun_akademik_screen.dart';
 import 'package:admin_pegawai/screens/kelas_screen.dart';
 import 'package:admin_pegawai/screens/kurikulum_screen.dart';
+import 'package:admin_pegawai/screens/pegawai_screen.dart';
 import 'package:admin_pegawai/screens/reset_screen.dart';
 import 'package:admin_pegawai/screens/super_dashboard_screen.dart';
 import 'package:admin_pegawai/screens/tahun_akademik_screen.dart';
@@ -33,7 +34,7 @@ void main() async {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
       String role =
           decodedToken['role_name'] ?? decodedToken['role'] ?? 'admin';
-          
+
       String cleanRole = role
           .toLowerCase()
           .replaceAll(' ', '')
@@ -85,6 +86,7 @@ class MainApp extends StatelessWidget {
         "/detail-kurikulum": (context) => DetailKurikulumScreen(),
         "/kelas": (context) => const KelasScreen(),
         "/detail-kelas": (context) => const DetailKelasScreen(),
+        // "/pegawai": (context) => PegawaiScreen(),
       },
     );
   }
