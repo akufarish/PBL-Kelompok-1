@@ -125,8 +125,10 @@ class _DashboardPageState extends State<DashboardPage> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         title: Row(
           children: [
             Image.asset(

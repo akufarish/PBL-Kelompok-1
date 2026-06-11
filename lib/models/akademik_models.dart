@@ -1,25 +1,48 @@
 class Kurikulum {
-  final String id; // Diubah dari int ke String sesuai UUID dari API
+  final String id;
   final String nama;
 
   Kurikulum({required this.id, required this.nama});
 
   factory Kurikulum.fromJson(Map<String, dynamic> json) {
     return Kurikulum(
-      id: json['id'] ?? '', // Default berupa String kosong jika null
-      nama: json['name'] ?? '', // Diubah dari 'nama' menjadi 'name' sesuai API
+      id: json['id'] ?? '',
+      nama: json['name'] ?? json['nama'] ?? '',
+    );
+  }
+}
+
+class Prodi {
+  final String id;
+  final String nama;
+
+  Prodi({required this.id, required this.nama});
+
+  factory Prodi.fromJson(Map<String, dynamic> json) {
+    return Prodi(
+      id: json['id'] ?? '',
+      nama: json['name'] ?? json['nama'] ?? '',
     );
   }
 }
 
 class Kelas {
   final String id;
-  final String namaKelas;
+  final String nama;
+  final String tahunAkademik;
 
-  Kelas({required this.id, required this.namaKelas});
+  Kelas({required this.id, required this.nama, required this.tahunAkademik});
 
   factory Kelas.fromJson(Map<String, dynamic> json) {
-    return Kelas(id: json['id'] ?? 0, namaKelas: json['nama_kelas'] ?? '');
+    return Kelas(
+      id: json['id'] ?? '',
+      nama: json['nama'] ?? json['nama_kelas'] ?? '',
+      tahunAkademik: json['tahun_akademik'] ?? '2024/2025 Genap',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'nama': nama, 'tahun_akademik': tahunAkademik};
   }
 }
 
@@ -45,6 +68,33 @@ class Nilai {
   }
 }
 
+class MataKuliah {
+  final String id;
+  final String kode;
+  final String name;
+  final int sks;
+
+  MataKuliah({
+    required this.id,
+    required this.kode,
+    required this.name,
+    required this.sks,
+  });
+
+  factory MataKuliah.fromJson(Map<String, dynamic> json) {
+    return MataKuliah(
+      id: json['id'] ?? '',
+      kode: json['kode'] ?? '',
+      name: json['name'] ?? '',
+      sks: json['sks'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'kode': kode, 'name': name, 'sks': sks};
+  }
+}
+
 class TahunAkademik {
   final int id;
   final String tipeSemester;
@@ -62,12 +112,11 @@ class TahunAkademik {
 
   factory TahunAkademik.fromJson(Map<String, dynamic> json) {
     return TahunAkademik(
-      id: json["id"],
-      tipeSemester:
-          json["tipee_semester"], // Tetap mempertahankan key typo dari API Anda
-      tahunAwal: json["tahun_awal"],
-      tahunAkhir: json["tahun_akhir"],
-      status: json["status"],
+      id: json["id"] ?? 0,
+      tipeSemester: json["tipee_semester"] ?? json["tipe_semester"] ?? '',
+      tahunAwal: json["tahun_awal"] ?? '',
+      tahunAkhir: json["tahun_akhir"] ?? '',
+      status: json["status"] ?? '',
     );
   }
 }

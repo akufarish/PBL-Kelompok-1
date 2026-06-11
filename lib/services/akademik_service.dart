@@ -9,7 +9,6 @@ class AkademikService {
   Future<List<TahunAkademik>> fetchTahunAkademik() async {
     try {
       final response = await _dio.get("/api/tahun-akademik");
-
       if (response.statusCode == 200 && response.data["success"] == true) {
         final List<dynamic> data = response.data["data"];
         return data.map((item) => TahunAkademik.fromJson(item)).toList();
@@ -25,13 +24,26 @@ class AkademikService {
     try {
       final response = await _dio.get("/api/kurikulum");
       if (response.statusCode == 200 && response.data["success"] == true) {
-        // PERBAIKAN: Tambahkan ["items"] karena list data berada di dalam key tersebut
         final List<dynamic> data = response.data["data"]["items"];
         return data.map((item) => Kurikulum.fromJson(item)).toList();
       }
       return [];
     } catch (e) {
       debugPrint("Error fetching kurikulum: $e");
+      return [];
+    }
+  }
+
+  Future<List<Prodi>> fetchProdi() async {
+    try {
+      final response = await _dio.get("/api/prodi");
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        final List<dynamic> data = response.data["data"]["items"];
+        return data.map((item) => Prodi.fromJson(item)).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint("Error fetching prodi: $e");
       return [];
     }
   }
@@ -47,6 +59,29 @@ class AkademikService {
     } catch (e) {
       debugPrint("Error fetching kelas: $e");
       return [];
+    }
+  }
+
+  Future<bool> updateKelas(Kelas kelas) async {
+    try {
+      final response = await _dio.put(
+        "/api/kelas/${kelas.id}",
+        data: kelas.toJson(),
+      );
+      return response.statusCode == 200 && response.data["success"] == true;
+    } catch (e) {
+      debugPrint("Error updating kelas: $e");
+      return false;
+    }
+  }
+
+  Future<bool> deleteKelas(String id) async {
+    try {
+      final response = await _dio.delete("/api/kelas/$id");
+      return response.statusCode == 200 && response.data["success"] == true;
+    } catch (e) {
+      debugPrint("Error deleting kelas: $e");
+      return false;
     }
   }
 
@@ -75,6 +110,43 @@ class AkademikService {
     } catch (e) {
       debugPrint("Error fetching nilai: $e");
       return [];
+    }
+  }
+
+  Future<List<MataKuliah>> fetchMataKuliah() async {
+    try {
+      final response = await _dio.get("/api/mata-kuliah");
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        final List<dynamic> data = response.data["data"]["items"];
+        return data.map((item) => MataKuliah.fromJson(item)).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint("Error fetching mata kuliah: $e");
+      return [];
+    }
+  }
+
+  Future<bool> updateMataKuliah(MataKuliah mk) async {
+    try {
+      final response = await _dio.put(
+        "/api/mata-kuliah/${mk.id}",
+        data: mk.toJson(),
+      );
+      return response.statusCode == 200 && response.data["success"] == true;
+    } catch (e) {
+      debugPrint("Error updating mata kuliah: $e");
+      return false;
+    }
+  }
+
+  Future<bool> deleteMataKuliah(String id) async {
+    try {
+      final response = await _dio.delete("/api/mata-kuliah/$id");
+      return response.statusCode == 200 && response.data["success"] == true;
+    } catch (e) {
+      debugPrint("Error deleting mata kuliah: $e");
+      return false;
     }
   }
 }
