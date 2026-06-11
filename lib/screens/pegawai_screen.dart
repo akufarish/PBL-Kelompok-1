@@ -1,11 +1,13 @@
 import 'package:admin_pegawai/components/header.dart';
 import 'package:admin_pegawai/models/pengguna_model.dart';
 import 'package:admin_pegawai/providers/user_provider.dart';
+import 'package:admin_pegawai/screens/detail_pengguna.dart';
 import 'package:admin_pegawai/utils/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class PegawaiScreen extends StatefulWidget {
   final PenggunaModel? penggunaModel;
@@ -96,49 +98,61 @@ class _PegawaiScreenState extends State<PegawaiScreen> {
 
             SliverPadding(
               padding: EdgeInsetsGeometry.only(top: 20),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final data = userProvider.listUser[index];
-
-                  return Card(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: EdgeInsetsGeometry.all(12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(Icons.person, size: 58),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(data.name),
-                                Text("NIP: DASDOPAKSDA23123123"),
-                                Text(data.roleName),
-                              ],
-                            ),
+              sliver: SliverSkeletonizer(
+                enabled: userProvider.isLoading,
+                child: SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final data = userProvider.listUser[index];
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailPengguna(userResponse: data),
                           ),
-                          Container(
-                            width: 70,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Aktif",
-                                style: TextStyle(color: Colors.white),
+                        );
+                      },
+                      child: Card(
+                        color: Colors.white,
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(Icons.person, size: 58),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(data.name),
+                                    Text("NIP: DASDOPAKSDA23123123"),
+                                    Text(data.roleName),
+                                  ],
+                                ),
                               ),
-                            ),
+                              Container(
+                                width: 70,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Aktif",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                }, childCount: userProvider.listUser.length),
+                    );
+                  }, childCount: userProvider.listUser.length),
+                ),
               ),
             ),
           ],

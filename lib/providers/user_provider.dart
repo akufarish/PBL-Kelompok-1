@@ -85,10 +85,6 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> getDataPengguna(String role) async {
-    // _isLoading = true;
-    // notifyListeners();
-    // _listUser = (await _userService.getDataPengguna(role))!;
-
     _isLoading = true;
     _listUser = [];
     notifyListeners();
