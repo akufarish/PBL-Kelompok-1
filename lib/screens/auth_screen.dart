@@ -1,6 +1,8 @@
-import 'package:admin_pegawai/models/user.dart';
-import 'package:admin_pegawai/providers/user_provider.dart';
+import 'package:admin_pegawai/models/auth_models.dart';
+import 'package:admin_pegawai/providers/auth_provider.dart';
 import 'package:admin_pegawai/utils/app_colors.dart';
+import 'package:admin_pegawai/screens/admin_main_screen.dart';
+import 'package:admin_pegawai/screens/admin_super_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -104,7 +106,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void doLogin() async {
-    final provider = context.read<UserProvider>();
+    final provider = context.read<AuthProvider>();
 
     LoginRequest loginRequest = LoginRequest(
       email: _emailController.text.trim(),
@@ -116,11 +118,19 @@ class _LoginFormState extends State<LoginForm> {
     if (!mounted) return;
 
     if (isSuccess) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        "/dashboard",
-        (route) => false,
-      );
+      if (provider.isSuperAdmin) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SuperScreen()),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminScreen()),
+          (route) => false,
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -133,7 +143,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<UserProvider>();
+    final provider = context.watch<AuthProvider>();
 
     return Container(
       decoration: const BoxDecoration(

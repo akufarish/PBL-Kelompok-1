@@ -1,18 +1,19 @@
-import 'package:admin_pegawai/models/user.dart';
+import 'package:admin_pegawai/models/user_models.dart';
+import 'package:admin_pegawai/providers/auth_provider.dart';
 import 'package:admin_pegawai/providers/user_provider.dart';
 import 'package:admin_pegawai/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class SuperDashboard extends StatefulWidget {
+  const SuperDashboard({super.key});
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<SuperDashboard> createState() => _SuperDashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _SuperDashboardState extends State<SuperDashboard> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(body: DashboardPage());
@@ -33,13 +34,12 @@ class _DashboardPageState extends State<DashboardPage> {
     Future.microtask(() {
       if (!mounted) return;
       context.read<UserProvider>().profile();
-      context.read<UserProvider>().fetchDashboardData();
+      context.read<UserProvider>().fetchDashboardUserData();
     });
   }
 
   void doLogout() async {
-    final provider = context.read<UserProvider>();
-    bool isSuccess = await provider.logout();
+    bool isSuccess = await context.read<AuthProvider>().logout();
 
     if (!mounted) return;
 
@@ -67,16 +67,17 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             Image.asset(
               'assets/logo/logo.png',
-              height: 60,
+              height: 50,
               fit: BoxFit.contain,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Text(
               'SABAR',
               style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
-                  color: Color(0xFF233D90),
-                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
                 ),
               ),
             ),
@@ -84,18 +85,21 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.black),
+            icon: const Icon(Icons.logout, color: Colors.black87),
             onPressed: () => doLogout(),
           ),
         ],
       ),
       body: userProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
+            )
           : RefreshIndicator(
               onRefresh: () async {
                 await context.read<UserProvider>().profile();
-                await context.read<UserProvider>().fetchDashboardData();
+                await context.read<UserProvider>().fetchDashboardUserData();
               },
+              color: AppColors.primaryColor,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Padding(
@@ -103,18 +107,21 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                       Text(
-                        "Selamat Datang, ${user?.name ?? 'Admin'}",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                        "Selamat Datang, ${user?.name ?? 'Super Admin'}",
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
                           color: Colors.black87,
                         ),
                       ),
-                      const Text(
+                      Text(
                         "Lagi mau ngapain nih?",
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.black54,
+                        ),
                       ),
                       const SizedBox(height: 24),
                       Row(
@@ -136,16 +143,16 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
-                      const Text(
+                      const SizedBox(height: 28),
+                      Text(
                         "Data Akun Terbaru",
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Builder(
                         builder: (context) {
                           final recentUsers = userProvider.listUser.length > 3
@@ -156,12 +163,14 @@ class _DashboardPageState extends State<DashboardPage> {
                               : userProvider.listUser.reversed.toList();
 
                           if (recentUsers.isEmpty) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 40),
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 40),
                               child: Center(
                                 child: Text(
                                   "Tidak ada data akun terbaru",
-                                  style: TextStyle(color: Colors.grey),
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                             );
@@ -197,9 +206,11 @@ class _DashboardPageState extends State<DashboardPage> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: Colors.black.withOpacity(
+                  0.04,
+                ), // Disamakan opacity-nya dengan bayangan card baru
+                blurRadius: 6,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -210,16 +221,20 @@ class _DashboardPageState extends State<DashboardPage> {
                   horizontal: 16,
                   vertical: 4,
                 ),
-                leading: const CircleAvatar(
+                leading: CircleAvatar(
                   radius: 22,
-                  backgroundColor: Color(0xFFF0F4F8),
-                  child: Icon(Icons.person, color: Color(0xFF667085), size: 26),
+                  backgroundColor: AppColors.secondaryColor,
+                  child: const Icon(
+                    Icons.person,
+                    color: AppColors.primaryColor,
+                    size: 26,
+                  ),
                 ),
                 title: Text(
                   user.name,
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 14,
                     color: Colors.black87,
                   ),
                 ),
@@ -234,7 +249,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF233D90),
+                      backgroundColor: AppColors.primaryColor,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -242,10 +257,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Lihat",
-                      style: TextStyle(
-                        fontSize: 13,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -255,7 +270,9 @@ class _DashboardPageState extends State<DashboardPage> {
               const Divider(
                 height: 1,
                 thickness: 1,
-                color: Color(0xFFE2E8F0),
+                color: Color(
+                  0xFFEEEEEE,
+                ), // Warna divider disesuaikan agar lebih halus
                 indent: 16,
                 endIndent: 16,
               ),
@@ -267,16 +284,29 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "Role",
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
                     Text(
-                      user.roleName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        color: Colors.black87,
+                      "Role",
+                      style: GoogleFonts.poppins(
+                        color: Colors.black54,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        user.roleName.toUpperCase(),
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                     ),
                   ],
@@ -290,6 +320,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
+// Komponen CardCount ini sekarang menggunakan desain border yang sama dengan Admin
 class CardCount extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -305,37 +336,31 @@ class CardCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.02),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.secondaryColor, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFF233D90), size: 32),
-          const SizedBox(height: 12),
+          Icon(icon, color: AppColors.primaryColor, size: 22),
+          const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
-              color: Color(0xFF233D90),
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
+            style: GoogleFonts.poppins(
+              color: AppColors.primaryColor,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             total.toString(),
-            style: const TextStyle(
-              color: Color(0xFF233D90),
+            style: GoogleFonts.poppins(
+              color: AppColors.primaryColor,
               fontSize: 32,
               fontWeight: FontWeight.bold,
             ),

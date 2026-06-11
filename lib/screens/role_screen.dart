@@ -1,4 +1,5 @@
-import 'package:admin_pegawai/models/user.dart';
+import 'package:admin_pegawai/models/user_models.dart';
+import 'package:admin_pegawai/providers/auth_provider.dart';
 import 'package:admin_pegawai/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class _RoleScreenState extends State<RoleScreen> {
   }
 
   void doLogout(BuildContext context) async {
-    final provider = context.read<UserProvider>();
+    final provider = context.read<AuthProvider>();
     bool isSuccess = await provider.logout();
 
     if (!mounted) return;

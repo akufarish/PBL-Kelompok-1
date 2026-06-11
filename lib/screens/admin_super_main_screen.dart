@@ -1,24 +1,20 @@
-import 'package:admin_pegawai/screens/dashboard_screen.dart';
+import 'package:admin_pegawai/screens/super_dashboard_screen.dart';
 import 'package:admin_pegawai/screens/account_screen.dart';
 import 'package:admin_pegawai/screens/role_screen.dart';
 import 'package:admin_pegawai/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class SuperScreen extends StatefulWidget {
+  const SuperScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<SuperScreen> createState() => _SuperScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _SuperScreenState extends State<SuperScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    Dashboard(),
-    AccountScreen(),
-    RoleScreen(),
-  ];
+  final List<Widget> _pages = [SuperDashboard(), AccountScreen(), RoleScreen()];
 
   void _onItemTapped(int index) {
     setState(() {

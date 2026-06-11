@@ -1,150 +1,96 @@
 import 'dart:io';
-import 'package:admin_pegawai/models/user.dart';
-import 'package:admin_pegawai/services/auth_service.dart';
+import 'package:admin_pegawai/models/user_models.dart';
+import 'package:admin_pegawai/services/user_service.dart';
+import 'package:admin_pegawai/services/dosen_service.dart';
 import 'package:flutter/material.dart';
 
 class UserProvider with ChangeNotifier {
-  final AuthService authService = AuthService();
+  final UserService _userService = UserService();
+  final DosenService _dosenService = DosenService();
 
+  bool _isLoading = false;
   int _totalUser = 0;
   int _totalRole = 0;
+  int _totalDosen = 0;
+  UserResponse? _data;
+  File? _profileImage;
+  List<UserResponse> _listUser = [];
+
+  bool get isLoading => _isLoading;
   int get totalUser => _totalUser;
   int get totalRole => _totalRole;
-
-  bool isLoading = false;
-  UserResponse? _data;
+  int get totalDosen => _totalDosen;
   UserResponse? get data => _data;
-
-  List<UserResponse> _listUser = [];
+  File? get profileImage => _profileImage;
   List<UserResponse> get listUser => _listUser;
 
-  File? _profileImage;
-  File? get profileImage => _profileImage;
-
-  Future<bool> login(LoginRequest payload) async {
-    isLoading = true;
+  Future<void> profile() async {
+    _isLoading = true;
     notifyListeners();
     try {
-      bool isSuccess = await authService.login(payload);
-      isLoading = false;
-      notifyListeners();
-      return isSuccess;
+      _data = await _userService.profile();
     } catch (e) {
-      debugPrint("$e");
-      isLoading = false;
-      notifyListeners();
-      return false;
+      debugPrint("Fetch Profile Error: $e");
     }
+    _isLoading = false;
+    notifyListeners();
   }
 
-  Future<bool> register(RegisterRequest payload) async {
-    isLoading = true;
-    notifyListeners();
-    try {
-      bool isSuccess = await authService.register(payload);
-      isLoading = false;
-      notifyListeners();
-      return isSuccess;
-    } catch (e) {
-      debugPrint("$e");
-      isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> logout() async {
-    isLoading = true;
-    notifyListeners();
-    try {
-      bool isSuccess = await authService.logout();
-      _data = null;
-      _profileImage = null;
-      isLoading = false;
-      notifyListeners();
-      return isSuccess;
-    } catch (e) {
-      debugPrint("$e");
-      isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<void> fetchDashboardData() async {
-    isLoading = true;
+  Future<void> fetchDashboardUserData() async {
+    _isLoading = true;
     notifyListeners();
 
     try {
-      final initialResponse = await Future.wait([
-        authService.fetchPaginatedUsers(1, 10),
-        authService.fetchTotalRoles(),
+      final responses = await Future.wait([
+        _userService.fetchPaginatedUsers(1, 10),
+        _userService.fetchTotalRoles(),
+        _dosenService.fetchTotalDosen(),
       ]);
 
-      final firstPageResult = initialResponse[0] as UserPaginationResponse?;
-      final totalRoleResult = initialResponse[1] as int;
-
-      _totalRole = totalRoleResult;
+      final firstPageResult = responses[0] as UserPaginationResponse?;
+      _totalRole = responses[1] as int;
+      _totalDosen = responses[2] as int;
 
       if (firstPageResult != null) {
         _totalUser = firstPageResult.totalItems;
         List<UserResponse> temporaryList = List.from(firstPageResult.users);
-
-        // Mengambil langsung jumlah total halaman dari keytotalPages milik api
         int totalPages = firstPageResult.totalPages;
 
-        for (int nextPage = 2; nextPage <= totalPages; nextPage++) {
-          final subsequentResult = await authService.fetchPaginatedUsers(
-            nextPage,
-            10,
+        if (totalPages > 1) {
+          final futures = List.generate(
+            totalPages - 1,
+            (index) => _userService.fetchPaginatedUsers(index + 2, 10),
           );
-          if (subsequentResult != null) {
-            temporaryList.addAll(subsequentResult.users);
+
+          final results = await Future.wait(futures);
+          for (var subsequentResult in results) {
+            if (subsequentResult != null) {
+              temporaryList.addAll(subsequentResult.users);
+            }
           }
         }
-
         _listUser = temporaryList;
       }
     } catch (e) {
-      debugPrint("Error fetching dashboard data: $e");
+      debugPrint("Error fetching dashboard user data: $e");
     }
 
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
-  }
-
-  Future<void> profile() async {
-    isLoading = true;
-    notifyListeners();
-    try {
-      _data = await authService.profile();
-      isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      debugPrint("$e");
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<bool> resetUser(ResetPassword payload) async {
-    isLoading = true;
-    notifyListeners();
-    try {
-      bool isSuccess = await authService.resetPassword(payload);
-      isLoading = false;
-      notifyListeners();
-      return isSuccess;
-    } catch (e) {
-      debugPrint("$e");
-      isLoading = false;
-      notifyListeners();
-      return false;
-    }
   }
 
   Future<void> setProfile(File image) async {
     _profileImage = image;
+    notifyListeners();
+  }
+
+  void clearUserData() {
+    _data = null;
+    _profileImage = null;
+    _listUser = [];
+    _totalUser = 0;
+    _totalRole = 0;
+    _totalDosen = 0;
     notifyListeners();
   }
 }

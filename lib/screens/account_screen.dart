@@ -1,4 +1,5 @@
-import 'package:admin_pegawai/models/user.dart';
+import 'package:admin_pegawai/models/user_models.dart';
+import 'package:admin_pegawai/providers/auth_provider.dart';
 import 'package:admin_pegawai/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:admin_pegawai/utils/app_colors.dart';
@@ -23,7 +24,7 @@ class _AccountScreenState extends State<AccountScreen> {
     super.initState();
     Future.microtask(() {
       if (!mounted) return;
-      context.read<UserProvider>().fetchDashboardData();
+      context.read<UserProvider>().fetchDashboardUserData();
     });
   }
 
@@ -34,7 +35,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   void doLogout(BuildContext context) async {
-    final provider = context.read<UserProvider>();
+    final provider = context.read<AuthProvider>();
     bool isSuccess = await provider.logout();
 
     if (!mounted) return;
@@ -106,7 +107,7 @@ class _AccountScreenState extends State<AccountScreen> {
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: () async {
-                await context.read<UserProvider>().fetchDashboardData();
+                await context.read<UserProvider>().fetchDashboardUserData();
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
