@@ -9,7 +9,6 @@ class DosenService {
 
   Future<int> fetchTotalDosen() async {
     try {
-      // Dio otomatis mengabaikan baseUrl bawaan jika menerima absolute URL lengkap seperti di bawah ini
       final response = await _dio.get(
         "$_kelompok2Url/api/employees/info/count",
       );

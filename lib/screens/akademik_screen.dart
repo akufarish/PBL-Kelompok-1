@@ -20,6 +20,7 @@ class _AkademikScreenState extends State<AkademikScreen> {
     Future.microtask(() {
       if (!mounted) return;
       context.read<UserProvider>().fetchDashboardUserData();
+      context.read<AkademikProvider>().fetchAkademikData();
     });
   }
 
@@ -43,13 +44,16 @@ class _AkademikScreenState extends State<AkademikScreen> {
     final userProvider = context.watch<AkademikProvider>();
     final int totalTahunAkademik = userProvider.listTahunAkademik.length;
     final int totalKurikulum = userProvider.listKurikulum.length;
+    final int totalMataKuliah = userProvider.listMataKuliah.length;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         title: Row(
           children: [
             Image.asset(
@@ -97,38 +101,73 @@ class _AkademikScreenState extends State<AkademikScreen> {
                 style: GoogleFonts.poppins(fontSize: 13, color: Colors.black54),
               ),
               const SizedBox(height: 24),
+
               _buildMenuTile(
                 title: "Tahun Akademik",
-                subtitle: "Tersedia $totalTahunAkademik Tahun Akademik",
+                subtitle: totalTahunAkademik > 0
+                    ? "Tersedia $totalTahunAkademik Tahun Akademik"
+                    : "Tersedia 11 Tahun Akademik",
                 icon: Icons.calendar_today_outlined,
                 onTap: () => Navigator.pushNamed(context, "/tahun-akademik"),
               ),
               const SizedBox(height: 16),
+
               _buildMenuTile(
                 title: "Kurikulum",
-                subtitle: "Tersedia $totalKurikulum Kurikulum",
-                icon: Icons.menu_book_outlined,
+                subtitle: totalKurikulum > 0
+                    ? "Tersedia $totalKurikulum Kurikulum"
+                    : "Tersedia 5 Kurikulum",
+                icon: Icons.book_outlined,
                 onTap: () => Navigator.pushNamed(context, "/kurikulum"),
               ),
               const SizedBox(height: 16),
+
+              _buildMenuTile(
+                title: "Matakuliah",
+                subtitle: totalMataKuliah > 0
+                    ? "Terdapat $totalMataKuliah Matakuliah"
+                    : "Terdapat 0 Matakuliah",
+                icon: Icons.assignment_outlined,
+                onTap: () => Navigator.pushNamed(context, "/matakuliah"),
+              ),
+              const SizedBox(height: 16),
+
               _buildMenuTile(
                 title: "Kelas",
                 subtitle: "Tersedia 21 Kelas",
-                icon: Icons.room_preferences_outlined,
+                icon: Icons.co_present_outlined,
                 onTap: () => Navigator.pushNamed(context, "/kelas"),
               ),
               const SizedBox(height: 16),
+
               _buildMenuTile(
                 title: "KHS",
                 subtitle: "Terdapat 102 KHS",
-                icon: Icons.assignment_outlined,
+                icon: Icons.description_outlined,
                 onTap: () {},
               ),
               const SizedBox(height: 16),
+
               _buildMenuTile(
                 title: "Nilai",
                 subtitle: "Terdapat 102 Nilai",
-                icon: Icons.edit_note_outlined,
+                icon: Icons.drive_file_rename_outline_rounded,
+                onTap: () {},
+              ),
+              const SizedBox(height: 16),
+
+              _buildMenuTile(
+                title: "Jurusan",
+                subtitle: "Terdapat 5 Jurusan",
+                icon: Icons.school_outlined,
+                onTap: () {},
+              ),
+              const SizedBox(height: 16),
+
+              _buildMenuTile(
+                title: "Prodi",
+                subtitle: "Terdapat 48 Prodi",
+                icon: Icons.workspace_premium_outlined,
                 onTap: () {},
               ),
               const SizedBox(height: 30),
@@ -148,11 +187,11 @@ class _AkademikScreenState extends State<AkademikScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
@@ -161,12 +200,12 @@ class _AkademikScreenState extends State<AkademikScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
             child: Row(
               children: [
-                Icon(icon, size: 36, color: AppColors.primaryColor),
+                Icon(icon, size: 32, color: const Color(0xFF424242)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -177,7 +216,7 @@ class _AkademikScreenState extends State<AkademikScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          color: const Color(0xFF2D2D2D),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -185,7 +224,7 @@ class _AkademikScreenState extends State<AkademikScreen> {
                         subtitle,
                         style: GoogleFonts.poppins(
                           fontSize: 12,
-                          color: Colors.black54,
+                          color: Colors.black45,
                         ),
                       ),
                     ],
@@ -194,7 +233,7 @@ class _AkademikScreenState extends State<AkademikScreen> {
                 const Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
-                  color: AppColors.primaryColor,
+                  color: Colors.black54,
                 ),
               ],
             ),

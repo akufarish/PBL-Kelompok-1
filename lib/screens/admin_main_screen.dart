@@ -1,8 +1,10 @@
 import 'package:admin_pegawai/screens/akademik_screen.dart';
 import 'package:admin_pegawai/screens/admin_dashboard_screen.dart';
 import 'package:admin_pegawai/screens/pengguna_screen.dart';
+import 'package:admin_pegawai/screens/account_screen.dart'; // Menghubungkan ke account_screen.dart sesuai struktur folder
 import 'package:admin_pegawai/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -18,7 +20,7 @@ class _AdminScreenState extends State<AdminScreen> {
     const AdminDashboard(),
     const AkademikScreen(),
     const PenggunaScreen(),
-    const Center(child: Text('Profile Screen')),
+    const AccountScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -31,39 +33,108 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped,
-        selectedItemColor: AppColors.primaryColor,
-        unselectedItemColor: Colors.grey,
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 12,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
-        unselectedLabelStyle: const TextStyle(fontSize: 12),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Beranda',
+        child: SafeArea(
+          top:
+              false,
+          child: Container(
+            height: 70,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(
+                  0,
+                  Icons.home_outlined,
+                  Icons.home_rounded,
+                  'Beranda',
+                ),
+                _buildNavItem(
+                  1,
+                  Icons.menu_book_outlined,
+                  Icons.menu_book_rounded,
+                  'Akademik',
+                ),
+                _buildNavItem(
+                  2,
+                  Icons.people_outline_rounded,
+                  Icons.people_rounded,
+                  'Pengguna',
+                ),
+                _buildNavItem(
+                  3,
+                  Icons.account_circle_outlined,
+                  Icons.account_circle_rounded,
+                  'Profile',
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
-            label: 'Akademik',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
-            activeIcon: Icon(Icons.people),
-            label: 'Pengguna',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_outlined),
-            activeIcon: Icon(Icons.account_circle),
-            label: 'Profile',
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    int index,
+    IconData unselectedIcon,
+    IconData selectedIcon,
+    String label,
+  ) {
+    final isSelected = _selectedIndex == index;
+
+    final itemColor = isSelected
+        ? AppColors.primaryColor
+        : const Color(0xFF2B4C7E).withOpacity(0.7);
+
+    return Expanded(
+      child: InkWell(
+        onTap: () => _onItemTapped(index),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            const Spacer(),
+            Icon(
+              isSelected ? selectedIcon : unselectedIcon,
+              color: itemColor,
+              size: 26,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                color: itemColor,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+            const Spacer(),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 4,
+              width: 45,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primaryColor : Colors.transparent,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(4),
+                  topRight: Radius.circular(4),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
